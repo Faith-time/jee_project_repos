@@ -17,7 +17,8 @@
 <!-- Sidebar -->
 <div class="sidebar">
     <h3 class="p-3 border-bottom">Espace Locataire</h3>
-    <a href="${pageContext.request.contextPath}/mes_contrats">📑 Mes Contrats</a>
+    <a href="${pageContext.request.contextPath}/unites">Unités Disponibles</a>
+    <a href="${pageContext.request.contextPath}/contrats">📑 Mes Contrats</a>
     <a href="${pageContext.request.contextPath}/paiements">💳 Mes Paiements</a>
     <a href="${pageContext.request.contextPath}/logout" class="text-danger">🚪 Déconnexion</a>
 </div>

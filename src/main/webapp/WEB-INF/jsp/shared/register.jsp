@@ -170,6 +170,26 @@
             padding-right: 0.5rem;
         }
 
+        .profile-info {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-left: 4px solid #667eea;
+        }
+
+        .profile-info h6 {
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .profile-info p {
+            color: #666;
+            font-size: 0.9rem;
+            margin: 0;
+        }
+
         @media (max-width: 480px) {
             .register-container {
                 margin: 10px;
@@ -190,6 +210,12 @@
     <div class="register-header">
         <h1 class="register-title">Inscription</h1>
         <p class="register-subtitle">Créez votre compte</p>
+    </div>
+
+    <!-- Information sur le profil automatique -->
+    <div class="profile-info">
+        <h6>📝 Information</h6>
+        <p>Votre profil sera déterminé automatiquement selon l'usage que vous ferez de la plateforme.</p>
     </div>
 
     <!-- Affichage des messages d'erreur avec JSTL -->
@@ -269,26 +295,6 @@
             >
             <div class="invalid-feedback">
                 Veuillez saisir une adresse email valide.
-            </div>
-        </div>
-
-        <!-- Type d'utilisateur -->
-        <div class="form-group">
-            <label for="type" class="form-label">Type de compte *</label>
-            <select id="type" name="type" class="form-select" required>
-                <option value="">-- Choisissez votre profil --</option>
-                <option value="LOCATAIRE" ${requestScope.type == 'LOCATAIRE' ? 'selected' : ''}>
-                    🏠 Locataire - Je recherche un logement
-                </option>
-                <option value="PROPRIETAIRE" ${requestScope.type == 'PROPRIETAIRE' ? 'selected' : ''}>
-                    🏢 Propriétaire - Je loue mes biens
-                </option>
-                <option value="ADMIN" ${requestScope.type == 'ADMIN' ? 'selected' : ''}>
-                    ⚙️ Administrateur - Je gère la plateforme
-                </option>
-            </select>
-            <div class="invalid-feedback">
-                Veuillez sélectionner un type de compte.
             </div>
         </div>
 
@@ -394,7 +400,6 @@
             const nom = document.getElementById('nom');
             const prenom = document.getElementById('prenom');
             const email = document.getElementById('email');
-            const type = document.getElementById('type');
             const motDePasse = document.getElementById('motDePasse');
             const confirmMotDePasse = document.getElementById('confirmMotDePasse');
 
@@ -425,15 +430,6 @@
             } else {
                 email.classList.remove('is-invalid');
                 email.classList.add('is-valid');
-            }
-
-            // Validation type
-            if (!type.value) {
-                type.classList.add('is-invalid');
-                isValid = false;
-            } else {
-                type.classList.remove('is-invalid');
-                type.classList.add('is-valid');
             }
 
             // Validation mot de passe

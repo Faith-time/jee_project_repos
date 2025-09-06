@@ -3,44 +3,73 @@ package sn.team.gestion_loc_immeubles.Controllers;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
+import sn.team.gestion_loc_immeubles.Entities.Role;
 import sn.team.gestion_loc_immeubles.Entities.Utilisateur;
+import sn.team.gestion_loc_immeubles.Services.LocataireService;
 
 import java.io.IOException;
+import java.util.List;
 
-@WebServlet("/locataire/dashboard")
+@WebServlet(name = "LocataireDashboardServlet", urlPatterns = {"/locataire/dashboard"})
 public class LocataireDashboardServlet extends HttpServlet {
 
-    @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
+    private LocataireService locataireService;
 
-        // Vérifier la session et le rôle
+    @Override
+    public void init() {
+        this.locataireService = new LocataireService();
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         HttpSession session = req.getSession(false);
-        if (session == null || !"LOCATAIRE".equals(session.getAttribute("role"))) {
+
+        // Vérifier si l'utilisateur est connecté
+        if (session == null || session.getAttribute("utilisateur") == null) {
             resp.sendRedirect(req.getContextPath() + "/auth?action=login");
             return;
         }
 
-        // Récupérer l'utilisateur connecté
-        Utilisateur utilisateur = (Utilisateur) session.getAttribute("utilisateur");
+        Utilisateur utilisateurConnecte = (Utilisateur) session.getAttribute("utilisateur");
 
-        // TODO: Récupérer les données réelles depuis la base de données
-        // List<Contrat> contrats = contratDAO.findByLocataireId(utilisateur.getId());
-        // List<Paiement> paiements = paiementDAO.findByLocataireId(utilisateur.getId());
+        try {
+            // Admin : voir tous les locataires
+            if (utilisateurConnecte.isAdmin()) {
+                List<Utilisateur> locataires = locataireService.getAllLocataires();
+                req.setAttribute("locataires", locataires);
+                req.setAttribute("isAdminView", true);
+                req.getRequestDispatcher("/WEB-INF/jsp/proprietaire/Liste_Locataires.jsp").forward(req, resp);
 
-        // Statistiques pour le dashboard selon votre JSP existante
-        long nbContrats = 0; // contrats.size();
-        long nbPaiementsPayes = 0; // paiements.stream().filter(p -> "PAYE".equals(p.getStatut())).count();
-        long nbPaiementsAttente = 0; // paiements.stream().filter(p -> "ATTENTE".equals(p.getStatut())).count();
-        double soldeRestant = 0.0; // Calculer selon vos règles métier
+                // Propriétaire : voir ses propres locataires
+            } else if (utilisateurConnecte.isProprietaire()) {
+                List<Utilisateur> locataires = locataireService.getLocatairesDuProprietaire(utilisateurConnecte.getId());
+                req.setAttribute("locataires", locataires);
+                req.setAttribute("proprietaireId", utilisateurConnecte.getId());
+                req.setAttribute("isProprietaireView", true);
+                req.getRequestDispatcher("/WEB-INF/jsp/proprietaire/Liste_Locataires.jsp").forward(req, resp);
 
-        // Ajouter les attributs requis par votre JSP
-        req.setAttribute("nbContrats", nbContrats);
-        req.setAttribute("nbPaiementsPayes", nbPaiementsPayes);
-        req.setAttribute("nbPaiementsAttente", nbPaiementsAttente);
-        req.setAttribute("soldeRestant", soldeRestant);
+                // Locataire : accéder à son dashboard
+            } else if (utilisateurConnecte.isLocataire()) {
+                // Exemple : récupérer les informations pertinentes pour le locataire
+                // Ici tu peux appeler des services pour ses unités louées, ses paiements, etc.
+                req.setAttribute("utilisateur", utilisateurConnecte);
+                req.getRequestDispatcher("/WEB-INF/jsp/locataire/dashboard.jsp").forward(req, resp);
 
-        // Forward vers votre JSP existante
-        req.getRequestDispatcher("/WEB-INF/jsp/locataire/dashboard.jsp").forward(req, resp);
+                // Tout autre rôle : accès interdit
+            } else {
+                resp.sendError(HttpServletResponse.SC_FORBIDDEN, "Accès non autorisé");
+            }
+
+        } catch (Exception e) {
+            System.err.println("Erreur dans LocataireDashboardServlet: " + e.getMessage());
+            e.printStackTrace();
+            resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Erreur interne du serveur");
+        }
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        // Pour de futures fonctionnalités (ex : modification du profil locataire)
+        resp.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED, "Méthode non implémentée");
     }
 }

@@ -11,6 +11,7 @@ import java.util.List;
 @Entity
 @Getter @Setter
 public class Immeuble {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -29,8 +30,8 @@ public class Immeuble {
     @OneToMany(mappedBy = "immeuble", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Unite> unites;
 
-    // Relation avec le propriétaire
+    // Propriétaire est un Utilisateur avec role PROPRIETAIRE
     @ManyToOne
     @JoinColumn(name = "proprietaire_id", nullable = false)
-    private Proprietaire proprietaire;
+    private Utilisateur proprietaire;
 }

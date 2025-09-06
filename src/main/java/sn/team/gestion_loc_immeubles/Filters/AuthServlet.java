@@ -1,4 +1,4 @@
-package sn.team.gestion_loc_immeubles.Controllers;
+package sn.team.gestion_loc_immeubles.Filters;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -257,7 +257,7 @@ public class AuthServlet extends HttpServlet {
             case ADMIN -> contextPath + "/admin/dashboard";
             case PROPRIETAIRE -> contextPath + "/proprietaire/dashboard";
             case LOCATAIRE -> contextPath + "/locataire/dashboard";
-            case VISITEUR -> contextPath + "/"; // Les visiteurs vont à la page d'accueil avec navigation
+            case VISITEUR -> contextPath + "/"; // Les visiteurs vont sur la page d'accueil
         };
     }
 
@@ -265,13 +265,14 @@ public class AuthServlet extends HttpServlet {
      * Crée un utilisateur avec le rôle VISITEUR par défaut
      */
     private Utilisateur creerUtilisateur(DonneesInscription donnees) {
-        // Tous les nouveaux utilisateurs sont des VISITEURS
+        // Tous les nouveaux utilisateurs sont automatiquement des VISITEURS
+        // Le rôle sera changé en LOCATAIRE uniquement lors de la première location
         Utilisateur utilisateur = new Utilisateur(
                 donnees.nom.trim(),
                 donnees.prenom.trim(),
                 donnees.email.trim().toLowerCase(),
                 donnees.motDePasse,
-                Role.VISITEUR // Forcer le rôle VISITEUR
+                Role.VISITEUR // Rôle forcé à VISITEUR
         );
 
         return utilisateur;
@@ -320,7 +321,8 @@ public class AuthServlet extends HttpServlet {
         donnees.email = req.getParameter("email");
         donnees.motDePasse = req.getParameter("motDePasse");
         donnees.confirmMotDePasse = req.getParameter("confirmMotDePasse");
-        // Le rôle n'est plus pris en compte, tous les nouveaux utilisateurs sont des VISITEURS
+
+        // Le rôle n'est plus sélectionnable, tous les nouveaux utilisateurs sont VISITEURS
         donnees.roleString = "VISITEUR";
 
         return donnees;
@@ -330,7 +332,7 @@ public class AuthServlet extends HttpServlet {
         if (donnees.nom != null) req.setAttribute("nom", donnees.nom.trim());
         if (donnees.prenom != null) req.setAttribute("prenom", donnees.prenom.trim());
         if (donnees.email != null) req.setAttribute("email", donnees.email.trim());
-        // Pas besoin de préserver le rôle car il est fixe
+        // Le rôle n'est plus nécessaire dans le formulaire
     }
 
     private String recupererNomUtilisateur(HttpSession session) {
@@ -365,7 +367,7 @@ public class AuthServlet extends HttpServlet {
     private void ajouterMessageBienvenue(HttpServletRequest req, Utilisateur utilisateur, boolean inscription) {
         HttpSession session = req.getSession();
         String message = inscription
-                ? "Bienvenue " + utilisateur.getPrenom() + " ! Votre compte visiteur a été créé avec succès. Parcourez nos immeubles disponibles !"
+                ? "Bienvenue " + utilisateur.getPrenom() + " ! Votre compte visiteur a été créé avec succès. Explorez nos immeubles et unités disponibles !"
                 : "Bienvenue " + utilisateur.getPrenom() + " !";
         session.setAttribute("welcomeMessage", message);
     }

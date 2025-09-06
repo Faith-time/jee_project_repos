@@ -12,6 +12,7 @@ import java.util.List;
 @Entity
 @Getter @Setter
 public class Contrat {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -25,12 +26,14 @@ public class Contrat {
     @NotNull
     private Double montant;
 
+    // Maintenant un locataire est un Utilisateur avec role LOCATAIRE
     @ManyToOne
-    @JoinColumn(name = "locataire_id")
-    private Locataire locataire;
+    @JoinColumn(name = "locataire_id", nullable = false)
+    private Utilisateur locataire;
 
+    // Unité louée
     @ManyToOne
-    @JoinColumn(name = "unite_id")
+    @JoinColumn(name = "unite_id", nullable = false)
     private Unite unite;
 
     @OneToMany(mappedBy = "contrat", cascade = CascadeType.ALL)

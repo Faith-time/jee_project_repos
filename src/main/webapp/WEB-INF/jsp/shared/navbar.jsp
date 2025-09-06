@@ -36,9 +36,6 @@
 </head>
 <body>
 
-<!-- Inclusion du navbar -->
-<jsp:include page="/WEB-INF/jsp/shared/navbar.jsp" />
-
 <!-- Messages d'alerte globaux -->
 <c:if test="${not empty requestScope.success}">
     <div class="container mt-3">

@@ -2,9 +2,8 @@ package sn.team.gestion_loc_immeubles.DAO;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
+import sn.team.gestion_loc_immeubles.Entities.Role;
 import sn.team.gestion_loc_immeubles.Entities.Utilisateur;
-import sn.team.gestion_loc_immeubles.Entities.Locataire;
-import sn.team.gestion_loc_immeubles.Entities.Proprietaire;
 
 import java.util.List;
 
@@ -24,30 +23,24 @@ public class UtilisateurDAOImpl extends GenericDAOImpl<Utilisateur> implements U
             return query.getResultStream().findFirst().orElse(null);
         } catch (Exception e) {
             throw new RuntimeException("Erreur lors de la recherche par email: " + e.getMessage(), e);
+        } finally {
+            em.close();
         }
     }
 
     @Override
-    public List<Locataire> findAllLocataires() {
+    public List<Utilisateur> findByRole(Role role) {
         EntityManager em = getEntityManager();
         try {
-            TypedQuery<Locataire> query = em.createQuery(
-                    "SELECT l FROM Locataire l", Locataire.class);
+            TypedQuery<Utilisateur> query = em.createQuery(
+                    "SELECT u FROM Utilisateur u WHERE u.role = :role ORDER BY u.nom, u.prenom",
+                    Utilisateur.class);
+            query.setParameter("role", role);
             return query.getResultList();
         } catch (Exception e) {
-            throw new RuntimeException("Erreur lors de la récupération des locataires: " + e.getMessage(), e);
-        }
-    }
-
-    @Override
-    public List<Proprietaire> findAllProprietaires() {
-        EntityManager em = getEntityManager();
-        try {
-            TypedQuery<Proprietaire> query = em.createQuery(
-                    "SELECT p FROM Proprietaire p", Proprietaire.class);
-            return query.getResultList();
-        } catch (Exception e) {
-            throw new RuntimeException("Erreur lors de la récupération des propriétaires: " + e.getMessage(), e);
+            throw new RuntimeException("Erreur lors de la recherche des utilisateurs par rôle: " + e.getMessage(), e);
+        } finally {
+            em.close();
         }
     }
 }

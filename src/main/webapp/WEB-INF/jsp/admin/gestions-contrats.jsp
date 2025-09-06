@@ -10,14 +10,75 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestion des Contrats</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/bootstrap.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
+        .sidebar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .nav-link {
+            color: rgba(255,255,255,0.8);
+            transition: all 0.3s;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: white;
+            background-color: rgba(255,255,255,0.1);
+            border-radius: 5px;
+        }
+        .stats-card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            transition: transform 0.3s, box-shadow 0.3s;
+            overflow: hidden;
+            position: relative;
+        }
+        .stats-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+        }
+        .stats-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.1) 100%);
+        }
+        .stats-card-contrats {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .stats-card-actifs {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        }
+        .stats-card-expirant {
+            background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);
+        }
+        .stats-card-expires {
+            background: linear-gradient(135deg, #dc3545 0%, #e83e8c 100%);
+        }
+        .stats-number {
+            font-size: 3rem;
+            font-weight: 700;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .stats-icon {
+            font-size: 3rem;
+            opacity: 0.3;
+            position: absolute;
+            right: 20px;
+            top: 20px;
+        }
         .status-badge {
             font-size: 0.8em;
             padding: 0.25rem 0.5rem;
         }
         .contract-card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
             transition: transform 0.2s;
         }
         .contract-card:hover {
@@ -29,76 +90,134 @@
     </style>
 </head>
 <body class="bg-light">
-<div class="container-fluid mt-4">
+<div class="container-fluid">
     <div class="row">
-        <div class="col-12">
-            <!-- En-tête -->
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <div>
-                    <h2 class="mb-0">
-                        <i class="fas fa-file-contract text-primary"></i>
-                        Gestion des Contrats
-                    </h2>
-                    <p class="text-muted mb-0">Liste complète de tous les contrats</p>
+        <!-- Sidebar -->
+        <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse">
+            <div class="position-sticky pt-3">
+                <div class="text-center mb-4">
+                    <h5 class="text-white"><i class="fas fa-user-shield"></i> Administration</h5>
                 </div>
-                <div>
-                    <a href="${pageContext.request.contextPath}/contrats/nouveau" class="btn btn-primary">
-                        <i class="fas fa-plus"></i> Nouveau Contrat
-                    </a>
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link" href="${pageContext.request.contextPath}/admin/dashboard">
+                            <i class="fas fa-tachometer-alt"></i> Tableau de bord
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="${pageContext.request.contextPath}/utilisateurs">
+                            <i class="fas fa-users"></i> Tous les utilisateurs
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="${pageContext.request.contextPath}/proprietaires">
+                            <i class="fas fa-home"></i> Propriétaires
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="${pageContext.request.contextPath}/locataires">
+                            <i class="fas fa-user-friends"></i> Locataires
+                        </a>
+                    </li>
+
+                </ul>
+                <hr class="text-white">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link" href="${pageContext.request.contextPath}/logout">
+                            <i class="fas fa-sign-out-alt"></i> Déconnexion
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Main content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <!-- Header -->
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">
+                    <i class="fas fa-file-contract text-primary"></i>
+                    Gestion des Contrats
+                </h1>
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    <div class="btn-group me-2">
+                        <a href="${pageContext.request.contextPath}/contrats/nouveau" class="btn btn-success">
+                            <i class="fas fa-plus"></i> Nouveau Contrat
+                        </a>
+                        <button type="button" class="btn btn-outline-secondary">
+                            <i class="fas fa-download"></i> Exporter
+                        </button>
+                    </div>
                 </div>
             </div>
 
-            <!-- Statistiques -->
+            <!-- Statistics Cards -->
             <div class="row mb-4">
-                <div class="col-md-3">
-                    <div class="card bg-primary text-white">
-                        <div class="card-body">
-                            <div class="d-flex align-items-center">
-                                <i class="fas fa-file-contract fa-2x me-3"></i>
-                                <div>
-                                    <h5 class="mb-0">${contrats.size()}</h5>
-                                    <small>Total Contrats</small>
+                <div class="col-xl-3 col-lg-6 col-md-6 mb-4">
+                    <div class="card stats-card stats-card-contrats text-white">
+                        <div class="card-body position-relative">
+                            <div class="row">
+                                <div class="col">
+                                    <h6 class="text-uppercase mb-1 opacity-75">Total Contrats</h6>
+                                    <div class="stats-number">${contrats != null ? contrats.size() : 0}</div>
+                                    <small class="opacity-75">
+                                        <i class="fas fa-file-contract"></i> Enregistrés
+                                    </small>
                                 </div>
                             </div>
+                            <i class="fas fa-file-contract stats-icon"></i>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-3">
-                    <div class="card bg-success text-white">
-                        <div class="card-body">
-                            <div class="d-flex align-items-center">
-                                <i class="fas fa-check-circle fa-2x me-3"></i>
-                                <div>
-                                    <h5 class="mb-0" id="contratsActifs">0</h5>
-                                    <small>Actifs</small>
+
+                <div class="col-xl-3 col-lg-6 col-md-6 mb-4">
+                    <div class="card stats-card stats-card-actifs text-white">
+                        <div class="card-body position-relative">
+                            <div class="row">
+                                <div class="col">
+                                    <h6 class="text-uppercase mb-1 opacity-75">Actifs</h6>
+                                    <div class="stats-number" id="contratsActifs">0</div>
+                                    <small class="opacity-75">
+                                        <i class="fas fa-check-circle"></i> En cours
+                                    </small>
                                 </div>
                             </div>
+                            <i class="fas fa-check-circle stats-icon"></i>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-3">
-                    <div class="card bg-warning text-white">
-                        <div class="card-body">
-                            <div class="d-flex align-items-center">
-                                <i class="fas fa-exclamation-triangle fa-2x me-3"></i>
-                                <div>
-                                    <h5 class="mb-0" id="contratsExpirant">0</h5>
-                                    <small>Expirant bientôt</small>
+
+                <div class="col-xl-3 col-lg-6 col-md-6 mb-4">
+                    <div class="card stats-card stats-card-expirant text-white">
+                        <div class="card-body position-relative">
+                            <div class="row">
+                                <div class="col">
+                                    <h6 class="text-uppercase mb-1 opacity-75">Expirant bientôt</h6>
+                                    <div class="stats-number" id="contratsExpirant">0</div>
+                                    <small class="opacity-75">
+                                        <i class="fas fa-exclamation-triangle"></i> À renouveler
+                                    </small>
                                 </div>
                             </div>
+                            <i class="fas fa-exclamation-triangle stats-icon"></i>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-3">
-                    <div class="card bg-danger text-white">
-                        <div class="card-body">
-                            <div class="d-flex align-items-center">
-                                <i class="fas fa-times-circle fa-2x me-3"></i>
-                                <div>
-                                    <h5 class="mb-0" id="contratsExpires">0</h5>
-                                    <small>Expirés</small>
+
+                <div class="col-xl-3 col-lg-6 col-md-6 mb-4">
+                    <div class="card stats-card stats-card-expires text-white">
+                        <div class="card-body position-relative">
+                            <div class="row">
+                                <div class="col">
+                                    <h6 class="text-uppercase mb-1 opacity-75">Expirés</h6>
+                                    <div class="stats-number" id="contratsExpires">0</div>
+                                    <small class="opacity-75">
+                                        <i class="fas fa-times-circle"></i> Terminés
+                                    </small>
                                 </div>
                             </div>
+                            <i class="fas fa-times-circle stats-icon"></i>
                         </div>
                     </div>
                 </div>
@@ -110,9 +229,9 @@
                     <div class="row">
                         <div class="col-md-4">
                             <div class="input-group">
-                                    <span class="input-group-text">
-                                        <i class="fas fa-search"></i>
-                                    </span>
+                                <span class="input-group-text">
+                                    <i class="fas fa-search"></i>
+                                </span>
                                 <input type="text" id="searchInput" class="form-control"
                                        placeholder="Rechercher par locataire, unité...">
                             </div>
@@ -151,12 +270,12 @@
                 <c:choose>
                     <c:when test="${empty contrats}">
                         <div class="col-12">
-                            <div class="card">
+                            <div class="card contract-card">
                                 <div class="card-body text-center py-5">
                                     <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
                                     <h5 class="text-muted">Aucun contrat trouvé</h5>
                                     <p class="text-muted">Commencez par créer votre premier contrat.</p>
-                                    <a href="${pageContext.request.contextPath}/contrats/nouveau" class="btn btn-primary">
+                                    <a href="${pageContext.request.contextPath}/contrats/nouveau" class="btn btn-success">
                                         <i class="fas fa-plus"></i> Nouveau Contrat
                                     </a>
                                 </div>
@@ -256,7 +375,7 @@
                     </c:otherwise>
                 </c:choose>
             </div>
-        </div>
+        </main>
     </div>
 </div>
 
@@ -288,10 +407,7 @@
     </div>
 </div>
 
-<!-- Bootstrap JS -->
-<script src="${pageContext.request.contextPath}/assets/js/bootstrap.bundle.min.js"></script>
-
-<!-- Scripts personnalisés -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     let contratToDelete = null;
 

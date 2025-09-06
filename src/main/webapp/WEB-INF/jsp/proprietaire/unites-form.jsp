@@ -95,6 +95,25 @@
               <div class="form-text">Montant du loyer mensuel</div>
             </div>
 
+            <!-- Statut -->
+            <div class="mb-3">
+              <label for="statut" class="form-label">
+                Statut <span class="text-danger">*</span>
+              </label>
+              <select id="statut" class="form-select" name="statut" required>
+                <option value="">-- Choisir un statut --</option>
+                <option value="DISPONIBLE"
+                        <c:if test="${unite != null && unite.statut == 'DISPONIBLE'}">selected</c:if>>
+                  Disponible
+                </option>
+                <option value="LOUE"
+                        <c:if test="${unite != null && unite.statut == 'LOUE'}">selected</c:if>>
+                  Loué
+                </option>
+              </select>
+              <div class="form-text">Indiquez si l'unité est actuellement disponible ou louée</div>
+            </div>
+
             <!-- Immeuble -->
             <div class="mb-3">
               <label for="immeubleId" class="form-label">
@@ -104,7 +123,7 @@
                 <option value="">-- Choisir un immeuble --</option>
                 <c:forEach var="i" items="${immeubles}">
                   <option value="${i.id}"
-                          <c:if test="${unite.immeuble != null && unite.immeuble.id == i.id}">selected</c:if>>
+                          <c:if test="${unite != null && unite.immeuble != null && unite.immeuble.id == i.id}">selected</c:if>>
                       ${i.nom} - ${i.adresse}
                   </option>
                 </c:forEach>
@@ -134,7 +153,7 @@
   </div>
 </div>
 
-<!-- Bootstrap JS (optionnel pour les interactions) -->
+<!-- Bootstrap JS (optionnel) -->
 <script src="${pageContext.request.contextPath}/assets/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
