@@ -18,146 +18,407 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/bootstrap.min.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             display: flex;
             min-height: 100vh;
             margin: 0;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
+
         .sidebar {
-            width: 250px;
-            background: #343a40;
+            width: 280px;
+            background: linear-gradient(180deg, #2c3e50 0%, #34495e 100%);
             color: white;
             flex-shrink: 0;
+            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
         }
+
+        .sidebar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #3498db, #9b59b6, #e74c3c, #f39c12);
+        }
+
+        .sidebar h3 {
+            background: rgba(0, 0, 0, 0.2);
+            margin: 0;
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
         .sidebar a {
-            color: #ddd;
+            color: #ecf0f1;
             text-decoration: none;
             display: block;
-            padding: 12px 20px;
+            padding: 15px 20px;
+            border-left: 3px solid transparent;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
         }
+
+        .sidebar a::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .sidebar a:hover::before {
+            left: 100%;
+        }
+
         .sidebar a:hover {
-            background: #495057;
+            background: rgba(52, 152, 219, 0.2);
+            border-left-color: #3498db;
             color: #fff;
+            transform: translateX(8px);
         }
+
         .sidebar a.active {
-            background: #007bff;
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            border-left-color: #fff;
             color: #fff;
+            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.2);
         }
+
         .content {
             flex-grow: 1;
-            padding: 20px;
-            background: #f8f9fa;
+            padding: 30px;
+            background: transparent;
         }
-        .contract-card {
-            border-radius: 10px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
-            border: none;
+
+        .page-header {
             background: white;
-            margin-bottom: 20px;
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
+
+        .contract-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border: none;
+            margin-bottom: 25px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .contract-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+        }
+
         .contract-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
         }
+
         .contract-header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 1.5rem;
-            border-radius: 10px 10px 0 0;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
         }
-        .contract-body {
-            padding: 1.5rem;
+
+        .contract-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20px;
+            width: 100px;
+            height: 200%;
+            background: rgba(255, 255, 255, 0.1);
+            transform: rotate(15deg);
         }
-        .status-active {
-            background: linear-gradient(45deg, #28a745, #20c997);
-            color: white;
-            padding: 0.3rem 0.8rem;
-            border-radius: 15px;
-            font-size: 0.85rem;
-            font-weight: bold;
-        }
-        .status-expired {
-            background: linear-gradient(45deg, #dc3545, #e83e8c);
-            color: white;
-            padding: 0.3rem 0.8rem;
-            border-radius: 15px;
-            font-size: 0.85rem;
-            font-weight: bold;
-        }
-        .info-row {
+
+        .contract-header h5 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 700;
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            margin-bottom: 0.8rem;
-            padding: 0.5rem 0;
-            border-bottom: 1px solid #f1f3f5;
+            position: relative;
+            z-index: 2;
         }
-        .info-row:last-child {
+
+        .contract-header h5 i {
+            margin-right: 12px;
+            font-size: 1.8rem;
+            opacity: 0.9;
+        }
+
+        .contract-body {
+            padding: 2rem;
+            background: white;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .info-item:last-child {
             border-bottom: none;
         }
-        .info-label {
-            font-weight: 600;
-            color: #495057;
+
+        .info-item:hover {
+            background: rgba(102, 126, 234, 0.05);
+            margin: 0 -1rem;
+            padding-left: 1rem;
+            padding-right: 1rem;
+            border-radius: 10px;
+        }
+
+        .info-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             display: flex;
             align-items: center;
+            justify-content: center;
+            color: white;
+            margin-right: 15px;
+            font-size: 16px;
         }
-        .info-label i {
-            margin-right: 8px;
-            color: #667eea;
+
+        .info-content {
+            flex: 1;
         }
-        .info-value {
-            color: #212529;
+
+        .info-label {
+            font-size: 0.85rem;
+            color: #6c757d;
             font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 2px;
         }
+
+        .info-value {
+            font-size: 1.1rem;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
         .empty-state {
             text-align: center;
-            padding: 4rem 2rem;
-            color: #6c757d;
+            padding: 5rem 3rem;
             background: white;
-            border-radius: 10px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            border: 2px dashed #dee2e6;
+            position: relative;
+            overflow: hidden;
         }
-        .empty-state i {
-            font-size: 4rem;
+
+        .empty-state::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.1), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .empty-state-icon {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 2rem;
+            color: white;
+            font-size: 3rem;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+
+        .empty-state h4 {
+            color: #2c3e50;
+            font-weight: 700;
             margin-bottom: 1rem;
-            color: #dee2e6;
+            font-size: 1.8rem;
         }
-        .unit-details {
-            background: #f8f9fa;
-            border-left: 4px solid #667eea;
-            padding: 1rem;
-            margin: 1rem 0;
-            border-radius: 0 8px 8px 0;
+
+        .empty-state p {
+            color: #6c757d;
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            line-height: 1.6;
         }
-        .actions-section {
-            margin-top: 1rem;
-            padding-top: 1rem;
-            border-top: 2px solid #f1f3f5;
+
+        .stats-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);
+            position: relative;
+            overflow: hidden;
         }
+
+        .stats-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10px;
+            width: 80px;
+            height: 200%;
+            background: rgba(255, 255, 255, 0.1);
+            transform: rotate(15deg);
+        }
+
+        .stats-card h4 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .stats-card small {
+            font-size: 1rem;
+            opacity: 0.9;
+            font-weight: 500;
+            position: relative;
+            z-index: 2;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 12px;
+            padding: 12px 30px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+        }
+
+        .contract-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
+            gap: 25px;
+        }
+
+        @media (max-width: 768px) {
+            .contract-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                width: 100%;
+                position: fixed;
+                top: 0;
+                left: -100%;
+                height: 100vh;
+                z-index: 1000;
+                transition: left 0.3s ease;
+            }
+
+            .content {
+                padding: 20px;
+            }
+        }
+
+        /* Animation d'entrée pour les cartes */
+        .contract-card {
+            animation: slideInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Délai d'animation pour chaque carte */
+        .contract-card:nth-child(1) { animation-delay: 0.1s; }
+        .contract-card:nth-child(2) { animation-delay: 0.2s; }
+        .contract-card:nth-child(3) { animation-delay: 0.3s; }
+        .contract-card:nth-child(4) { animation-delay: 0.4s; }
     </style>
 </head>
 <body>
 
 <!-- Sidebar -->
 <div class="sidebar">
-    <h3 class="p-3 border-bottom">Espace Locataire</h3>
-    <a href="${pageContext.request.contextPath}/dashboard">📊 Dashboard</a>
+    <h3 class="border-bottom-0">Espace Locataire</h3>
+    <a href="${pageContext.request.contextPath}/locataire/dashboard">📊 Dashboard</a>
     <a href="${pageContext.request.contextPath}/unites">🏢 Unités Disponibles</a>
     <a href="${pageContext.request.contextPath}/contrats" class="active">📑 Mes Contrats</a>
-    <a href="${pageContext.request.contextPath}/paiements">💳 Mes Paiements</a>
+    <a href="${pageContext.request.contextPath}/locataire/paiements">💳 Mes Paiements</a>
     <a href="${pageContext.request.contextPath}/logout" class="text-danger">🚪 Déconnexion</a>
 </div>
 
 <!-- Contenu -->
 <div class="content">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h2><i class="fas fa-file-contract me-2 text-primary"></i>Mes Contrats de Location</h2>
-            <p class="text-muted mb-0">Bienvenue <%= locataireConnecte.getPrenom() %> <%= locataireConnecte.getNom() %></p>
-        </div>
-        <div class="text-end">
-            <div class="bg-primary text-white rounded p-3">
+    <div class="page-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h2 class="mb-2">
+                    <i class="fas fa-file-contract me-3" style="color: #667eea;"></i>
+                    Mes Contrats de Location
+                </h2>
+                <p class="text-muted mb-0 fs-5">
+                    Bienvenue <strong><%= locataireConnecte.getPrenom() %> <%= locataireConnecte.getNom() %></strong>
+                </p>
+            </div>
+            <div class="stats-card">
                 <h4 class="mb-0">${fn:length(contrats)}</h4>
                 <small>Contrat(s)</small>
             </div>
@@ -168,122 +429,97 @@
     <c:choose>
         <c:when test="${empty contrats}">
             <div class="empty-state">
-                <i class="fas fa-file-contract"></i>
-                <h4>Vous n'avez aucun contrat pour le moment</h4>
-                <p>Lorsque vous signerez un contrat de location, il apparaîtra ici.</p>
-                <a href="${pageContext.request.contextPath}/unites" class="btn btn-primary mt-3">
-                    <i class="fas fa-building me-2"></i>Voir les unités disponibles
+                <div class="empty-state-icon">
+                    <i class="fas fa-file-contract"></i>
+                </div>
+                <h4>Aucun contrat pour le moment</h4>
+                <p>Lorsque vous signerez un contrat de location, il apparaîtra ici avec tous les détails importants.</p>
+                <a href="${pageContext.request.contextPath}/unites" class="btn btn-primary btn-lg">
+                    <i class="fas fa-building me-2"></i>Découvrir les unités disponibles
                 </a>
             </div>
         </c:when>
         <c:otherwise>
-            <div class="row">
-                <c:forEach var="contrat" items="${contrats}">
-                    <div class="col-md-6 mb-4">
-                        <div class="card contract-card">
-                            <div class="contract-header">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <h5 class="mb-0">
-                                        <i class="fas fa-file-contract me-2"></i>
-                                        Contrat #${contrat.id}
-                                    </h5>
-                                    <!-- Statut du contrat -->
+            <div class="contract-grid">
+                <c:forEach var="contrat" items="${contrats}" varStatus="status">
+                    <div class="contract-card">
+                        <div class="contract-header">
+                            <h5>
+                                <i class="fas fa-file-signature"></i>
+                                Contrat #${contrat.id}
+                            </h5>
+                        </div>
+                        <div class="contract-body">
+                            <div class="info-item">
+                                <div class="info-icon">
+                                    <i class="fas fa-hashtag"></i>
+                                </div>
+                                <div class="info-content">
+                                    <div class="info-label">Index</div>
+                                    <div class="info-value">${status.index}</div>
+                                </div>
+                            </div>
+
+                            <div class="info-item">
+                                <div class="info-icon">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <div class="info-content">
+                                    <div class="info-label">Locataire ID</div>
+                                    <div class="info-value">${contrat.locataire.id}</div>
+                                </div>
+                            </div>
+
+                            <!-- Test si l'unité existe -->
+                            <c:choose>
+                                <c:when test="${not empty contrat.unite}">
+                                    <div class="info-item">
+                                        <div class="info-icon">
+                                            <i class="fas fa-door-open"></i>
+                                        </div>
+                                        <div class="info-content">
+                                            <div class="info-label">Unité</div>
+                                            <div class="info-value">${contrat.unite.numero}</div>
+                                        </div>
+                                    </div>
+
                                     <c:choose>
-                                        <c:when test="${empty contrat.dateFin or contrat.dateFin.after(now)}">
-                                            <span class="status-active">
-                                                <i class="fas fa-check-circle me-1"></i>Actif
-                                            </span>
+                                        <c:when test="${not empty contrat.unite.immeuble}">
+                                            <div class="info-item">
+                                                <div class="info-icon">
+                                                    <i class="fas fa-building"></i>
+                                                </div>
+                                                <div class="info-content">
+                                                    <div class="info-label">Immeuble</div>
+                                                    <div class="info-value">${contrat.unite.immeuble.nom}</div>
+                                                </div>
+                                            </div>
                                         </c:when>
-                                        <c:when test="${contrat.dateFin.before(now)}">
-                                            <span class="status-expired">
-                                                <i class="fas fa-times-circle me-1"></i>Expiré
-                                            </span>
-                                        </c:when>
+                                        <c:otherwise>
+                                            <div class="info-item">
+                                                <div class="info-icon">
+                                                    <i class="fas fa-exclamation-triangle text-warning"></i>
+                                                </div>
+                                                <div class="info-content">
+                                                    <div class="info-label">Immeuble</div>
+                                                    <div class="info-value text-warning">NON CHARGÉ</div>
+                                                </div>
+                                            </div>
+                                        </c:otherwise>
                                     </c:choose>
-                                </div>
-                            </div>
-
-                            <div class="contract-body">
-                                <!-- Informations sur l'unité -->
-                                <div class="unit-details">
-                                    <h6 class="mb-2 text-primary">
-                                        <i class="fas fa-building me-2"></i>Informations de l'unité
-                                    </h6>
-                                    <div class="info-row">
-                                        <span class="info-label">
-                                            <i class="fas fa-home"></i>Immeuble
-                                        </span>
-                                        <span class="info-value">${contrat.unite.immeuble.nom}</span>
+                                </c:when>
+                                <c:otherwise>
+                                    <div class="info-item">
+                                        <div class="info-icon">
+                                            <i class="fas fa-exclamation-triangle text-warning"></i>
+                                        </div>
+                                        <div class="info-content">
+                                            <div class="info-label">Unité</div>
+                                            <div class="info-value text-warning">NON CHARGÉE</div>
+                                        </div>
                                     </div>
-                                    <div class="info-row">
-                                        <span class="info-label">
-                                            <i class="fas fa-door-closed"></i>Unité N°
-                                        </span>
-                                        <span class="info-value">${contrat.unite.numero}</span>
-                                    </div>
-                                    <div class="info-row">
-                                        <span class="info-label">
-                                            <i class="fas fa-th-large"></i>Pièces
-                                        </span>
-                                        <span class="info-value">${contrat.unite.nbPieces}</span>
-                                    </div>
-                                    <div class="info-row">
-                                        <span class="info-label">
-                                            <i class="fas fa-expand-arrows-alt"></i>Superficie
-                                        </span>
-                                        <span class="info-value">${contrat.unite.superficie} m²</span>
-                                    </div>
-                                </div>
-
-                                <!-- Détails du contrat -->
-                                <div class="info-row">
-                                    <span class="info-label">
-                                        <i class="fas fa-calendar-alt"></i>Date début
-                                    </span>
-                                    <span class="info-value">
-                                        <fmt:formatDate value="${contrat.dateDebut}" pattern="dd/MM/yyyy"/>
-                                    </span>
-                                </div>
-                                <div class="info-row">
-                                    <span class="info-label">
-                                        <i class="fas fa-calendar-check"></i>Date fin
-                                    </span>
-                                    <span class="info-value">
-                                        <c:choose>
-                                            <c:when test="${not empty contrat.dateFin}">
-                                                <fmt:formatDate value="${contrat.dateFin}" pattern="dd/MM/yyyy"/>
-                                            </c:when>
-                                            <c:otherwise>
-                                                <span class="text-muted">Non spécifiée</span>
-                                            </c:otherwise>
-                                        </c:choose>
-                                    </span>
-                                </div>
-                                <div class="info-row">
-                                    <span class="info-label">
-                                        <i class="fas fa-money-bill-wave"></i>Loyer mensuel
-                                    </span>
-                                    <span class="info-value">
-                                        <strong class="text-success">
-                                            <fmt:formatNumber value="${contrat.montant}" type="number" maxFractionDigits="0"/> FCFA
-                                        </strong>
-                                    </span>
-                                </div>
-
-                                <!-- Actions -->
-                                <div class="actions-section">
-                                    <div class="d-flex gap-2">
-                                        <a href="${pageContext.request.contextPath}/paiements?contrat=${contrat.id}"
-                                           class="btn btn-outline-primary btn-sm">
-                                            <i class="fas fa-eye me-1"></i>Voir paiements
-                                        </a>
-                                        <a href="${pageContext.request.contextPath}/contrat/details/${contrat.id}"
-                                           class="btn btn-outline-info btn-sm">
-                                            <i class="fas fa-info-circle me-1"></i>Détails
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
+                                </c:otherwise>
+                            </c:choose>
                         </div>
                     </div>
                 </c:forEach>

@@ -25,7 +25,7 @@ public class UniteServlet extends HttpServlet {
     private ImmeubleDAO immeubleDAO;
     private UniteService uniteService;
     private ContratDAO contratDAO;
-
+    private PaiementDAO paiementDAO;
 
     @Override
     public void init() {
@@ -33,6 +33,7 @@ public class UniteServlet extends HttpServlet {
         this.immeubleDAO = new ImmeubleDAOImpl();
         this.uniteService = new UniteService();
         this.contratDAO = new ContratDAOImpl();
+        this.paiementDAO = new PaiementDAOImpl();
 
     }
 
@@ -261,6 +262,23 @@ public class UniteServlet extends HttpServlet {
 
                     // 3. Sauvegarde en BDD
                     contratDAO.save(contrat);
+
+                    // 4. NOUVEAU : Création automatique du premier paiement
+                    Paiement premierPaiement = new Paiement();
+                    premierPaiement.setMontant(unite.getLoyer());
+                    premierPaiement.setDateEcheance(LocalDate.now().plusMonths(1)); // Échéance dans 1 mois
+                    premierPaiement.setStatut(Paiement.StatutPaiement.EN_ATTENTE);
+                    premierPaiement.setContrat(contrat);
+
+                    // Générer un transactionId unique
+                    String transactionId = "PAI-" + contrat.getId() + "-" + System.currentTimeMillis();
+                    premierPaiement.setTransactionId(transactionId);
+
+                    // 5. Sauvegarde du paiement en BDD
+                    paiementDAO.save(premierPaiement);
+
+                    LOGGER.info("Paiement automatique créé pour le contrat ID: " + contrat.getId() +
+                            " avec transaction ID: " + transactionId);
                 }
 
                 resp.sendRedirect(req.getContextPath() + "/unites"); // retour liste
@@ -284,11 +302,6 @@ public class UniteServlet extends HttpServlet {
         }
     }
 
-    private void handleUnitesDisponibles(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        List<Unite> unitesDisponibles = uniteService.listerUnitesDisponibles();
-        req.setAttribute("unites", unitesDisponibles);
-        req.getRequestDispatcher("/WEB-INF/jsp/locataire/Liste_unites.jsp").forward(req, resp);
-    }
 
     private void handleLouerUnite(HttpServletRequest req, HttpServletResponse resp, Long uniteId) throws IOException {
         HttpSession session = req.getSession();
@@ -326,35 +339,6 @@ public class UniteServlet extends HttpServlet {
         }
 
         resp.sendRedirect(req.getContextPath() + "/unites");
-    }
-
-    private void handleLouerUnitePost(HttpServletRequest req, HttpServletResponse resp, Utilisateur utilisateurConnecte) throws IOException {
-        HttpSession session = req.getSession();
-        String uniteIdParam = req.getParameter("uniteId");
-
-        if (uniteIdParam == null) {
-            session.setAttribute("errorMessage", "Unité non spécifiée.");
-            resp.sendRedirect(req.getContextPath() + "/unites?action=disponibles");
-            return;
-        }
-
-        try {
-            Long uniteId = Long.parseLong(uniteIdParam);
-            boolean success = uniteService.louerUniteAvecContrat(uniteId, utilisateurConnecte.getId());
-
-            if (success) {
-                session.setAttribute("successMessage",
-                        "L'unité a été louée avec succès! Un contrat d'un an a été automatiquement créé.");
-            } else {
-                session.setAttribute("errorMessage",
-                        "Erreur lors de la location. L'unité pourrait déjà être louée ou vous n'êtes pas autorisé.");
-            }
-        } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Erreur lors de la location avec contrat", e);
-            session.setAttribute("errorMessage", "Erreur lors de la location de l'unité.");
-        }
-
-        resp.sendRedirect(req.getContextPath() + "/unites?action=disponibles");
     }
 
     private void handleCreate(HttpServletRequest req, HttpServletResponse resp, HttpSession session) throws IOException {

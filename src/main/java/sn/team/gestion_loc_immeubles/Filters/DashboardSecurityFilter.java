@@ -81,9 +81,11 @@ public class DashboardSecurityFilter implements Filter {
             return false;
         }
 
-        // Récupérer le rôle de l'utilisateur
-        String roleString = (String) session.getAttribute("role");
-        Role roleUtilisateur = Role.fromString(roleString);
+        // CORRECTION : Récupérer le rôle depuis l'objet Utilisateur
+        sn.team.gestion_loc_immeubles.Entities.Utilisateur utilisateur =
+                (sn.team.gestion_loc_immeubles.Entities.Utilisateur) session.getAttribute("utilisateur");
+
+        Role roleUtilisateur = utilisateur.getRole(); // Utiliser getRole() au lieu de chercher un attribut "role"
 
         // Vérifier le rôle
         if (roleRequis != roleUtilisateur) {
@@ -94,7 +96,6 @@ public class DashboardSecurityFilter implements Filter {
 
         return true; // Accès autorisé
     }
-
     /**
      * Sauvegarde l'URL actuelle et redirige vers la page de connexion
      */

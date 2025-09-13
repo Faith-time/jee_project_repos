@@ -154,10 +154,10 @@
 <!-- Sidebar -->
 <div class="sidebar">
     <h3 class="p-3 border-bottom">Espace Locataire</h3>
-    <a href="${pageContext.request.contextPath}/dashboard">📊 Dashboard</a>
+    <a href="${pageContext.request.contextPath}/locataire/dashboard">📊 Dashboard</a>
     <a href="${pageContext.request.contextPath}/unites" class="active">🏢 Unités Disponibles</a>
     <a href="${pageContext.request.contextPath}/contrats">📑 Mes Contrats</a>
-    <a href="${pageContext.request.contextPath}/paiements">💳 Mes Paiements</a>
+    <a href="${pageContext.request.contextPath}/locataire/paiements">💳 Mes Paiements</a>
     <a href="${pageContext.request.contextPath}/logout" class="text-danger">🚪 Déconnexion</a>
 </div>
 

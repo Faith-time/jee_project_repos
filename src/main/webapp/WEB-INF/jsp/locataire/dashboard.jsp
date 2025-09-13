@@ -17,9 +17,10 @@
 <!-- Sidebar -->
 <div class="sidebar">
     <h3 class="p-3 border-bottom">Espace Locataire</h3>
-    <a href="${pageContext.request.contextPath}/unites">Unités Disponibles</a>
+    <a href="${pageContext.request.contextPath}/locataire/dashboard">📊 Dashboard</a>
+    <a href="${pageContext.request.contextPath}/unites">🏢Unités Disponibles</a>
     <a href="${pageContext.request.contextPath}/contrats">📑 Mes Contrats</a>
-    <a href="${pageContext.request.contextPath}/paiements">💳 Mes Paiements</a>
+    <a href="${pageContext.request.contextPath}/locataire/paiements">💳 Mes Paiements</a>
     <a href="${pageContext.request.contextPath}/logout" class="text-danger">🚪 Déconnexion</a>
 </div>
 
@@ -27,41 +28,6 @@
 <div class="content">
     <h2>📊 Dashboard Locataire</h2>
     <p>Bienvenue ${sessionScope.utilisateur.nom} ${sessionScope.utilisateur.prenom}.</p>
-
-    <div class="row mt-4">
-        <div class="col-md-3">
-            <div class="card text-white bg-primary mb-3">
-                <div class="card-body">
-                    <h5 class="card-title">Mes Contrats</h5>
-                    <p class="card-text">Total : <strong>${nbContrats}</strong></p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card text-white bg-success mb-3">
-                <div class="card-body">
-                    <h5 class="card-title">Paiements effectués</h5>
-                    <p class="card-text">Total : <strong>${nbPaiementsPayes}</strong></p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card text-white bg-warning mb-3">
-                <div class="card-body">
-                    <h5 class="card-title">Paiements en attente</h5>
-                    <p class="card-text">Total : <strong>${nbPaiementsAttente}</strong></p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card text-white bg-danger mb-3">
-                <div class="card-body">
-                    <h5 class="card-title">Solde restant</h5>
-                    <p class="card-text"><strong>${soldeRestant} €</strong></p>
-                </div>
-            </div>
-        </div>
-    </div>
 </div>
 
 <script src="${pageContext.request.contextPath}/assets/js/bootstrap.bundle.min.js"></script>

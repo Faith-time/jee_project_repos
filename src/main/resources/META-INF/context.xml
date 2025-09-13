@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context>
+    <Environment name="CINETPAY_APIKEY"
+                 value="171302123268bf578d753cf5.30754439"
+                 type="java.lang.String"/>
+
+    <Environment name="CINETPAY_SITEID"
+                 value="105906272"
+                 type="java.lang.String"/>
+
+    <Environment name="CINETPAY_SECRET"
+                 value="189871960168bf57d75069f5.02854940"
+                 type="java.lang.String"/>
+
+    <Environment name="CINETPAY_NOTIFY_URL"
+                 value="https://b90ff648b0b4.ngrok-free.app/gestion_loc_immeubles/cinetpay/notify"
+                 type="java.lang.String"/>
+
+    <Environment name="CINETPAY_RETURN_URL"
+                 value="https://b90ff648b0b4.ngrok-free.app/gestion_loc_immeubles/cinetpay/return"
+                 type="java.lang.String"/>
+</Context>

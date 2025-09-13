@@ -93,7 +93,9 @@
         .stat-card.immeubles::before { background: linear-gradient(90deg, #3498db, #2980b9); }
         .stat-card.unites::before { background: linear-gradient(90deg, #27ae60, #229954); }
         .stat-card.disponibles::before { background: linear-gradient(90deg, #f39c12, #e67e22); }
-        .stat-card.paiements::before { background: linear-gradient(90deg, #e74c3c, #c0392b); }
+        .stat-card.locataires-actifs::before { background: linear-gradient(90deg, #e74c3c, #c0392b); }
+        .stat-card.total-locataires::before { background: linear-gradient(90deg, #9b59b6, #8e44ad); }
+        .stat-card.paiements::before { background: linear-gradient(90deg, #34495e, #2c3e50); }
 
         .stat-card:hover {
             transform: translateY(-10px);
@@ -109,7 +111,9 @@
         .immeubles .stat-icon { color: #3498db; }
         .unites .stat-icon { color: #27ae60; }
         .disponibles .stat-icon { color: #f39c12; }
-        .paiements .stat-icon { color: #e74c3c; }
+        .locataires-actifs .stat-icon { color: #e74c3c; }
+        .total-locataires .stat-icon { color: #9b59b6; }
+        .paiements .stat-icon { color: #34495e; }
 
         .stat-number {
             font-size: 3rem;
@@ -124,6 +128,56 @@
             color: #5a6c7d;
             text-transform: uppercase;
             letter-spacing: 1px;
+        }
+
+        /* Styles pour la liste des locataires */
+        .locataires-section {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .locataires-list {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .locataires-list h4 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-weight: 600;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+
+        .locataire-item {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-left: 4px solid #3498db;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+        }
+
+        .locataire-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .locataire-name {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+
+        .locataire-email {
+            color: #7f8c8d;
+            font-size: 0.9rem;
         }
 
         .debug-info {
@@ -213,8 +267,8 @@
 
         <div class="stat-card unites">
             <div class="stat-icon">🏠</div>
-            <div class="stat-number">${totalUnites != null ? totalUnites : 0}</div>
-            <div class="stat-label">Mes Unités</div>
+            <div class="stat-number">${nbUnites != null ? nbUnites : 0}</div>
+            <div class="stat-label">Total Unités</div>
         </div>
 
         <div class="stat-card disponibles">
@@ -223,11 +277,49 @@
             <div class="stat-label">Unités Disponibles</div>
         </div>
 
+        <!-- Nouvelles cartes pour les locataires -->
+        <div class="stat-card locataires-actifs">
+            <div class="stat-icon">👥</div>
+            <div class="stat-number">${nbLocatairesActifs != null ? nbLocatairesActifs : 0}</div>
+            <div class="stat-label">Locataires Actifs</div>
+        </div>
+
+        <div class="stat-card total-locataires">
+            <div class="stat-icon">📊</div>
+            <div class="stat-number">${nbTotalLocataires != null ? nbTotalLocataires : 0}</div>
+            <div class="stat-label">Total Locataires</div>
+        </div>
+
         <div class="stat-card paiements">
             <div class="stat-icon">💰</div>
             <div class="stat-number">${nbPaiements != null ? nbPaiements : 0}</div>
             <div class="stat-label">Paiements Reçus</div>
         </div>
+    </div>
+
+    <!-- Section des locataires -->
+    <div class="locataires-section">
+        <h3>👥 Gestion des Locataires</h3>
+
+        <!-- Liste détaillée des locataires -->
+        <c:if test="${not empty locataires}">
+            <div class="locataires-list">
+                <h4>Vos locataires actuels (${locataires.size()}):</h4>
+                <c:forEach items="${locataires}" var="locataire">
+                    <div class="locataire-item">
+                        <div class="locataire-name">${locataire.nomComplet}</div>
+                        <div class="locataire-email">${locataire.email}</div>
+                    </div>
+                </c:forEach>
+            </div>
+        </c:if>
+
+        <c:if test="${empty locataires}">
+            <div class="alert alert-info mt-3">
+                <h5>Aucun locataire actuel</h5>
+                <p>Vous n'avez actuellement aucun locataire avec des contrats actifs.</p>
+            </div>
+        </c:if>
     </div>
 
     <!-- Actions rapides -->
@@ -277,16 +369,28 @@
             <span class="debug-value">${sessionScope.utilisateur.role}</span>
         </div>
         <div class="debug-item">
+            <span class="debug-label">Nombre Immeubles:</span>
+            <span class="debug-value">${nbImmeubles}</span>
+        </div>
+        <div class="debug-item">
             <span class="debug-label">Total Unités:</span>
-            <span class="debug-value">${totalUnites}</span>
+            <span class="debug-value">${nbUnites}</span>
         </div>
         <div class="debug-item">
             <span class="debug-label">Unités Disponibles:</span>
             <span class="debug-value">${unitesDisponibles}</span>
         </div>
         <div class="debug-item">
-            <span class="debug-label">Nombre Immeubles:</span>
-            <span class="debug-value">${nbImmeubles}</span>
+            <span class="debug-label">Locataires Actifs:</span>
+            <span class="debug-value">${nbLocatairesActifs}</span>
+        </div>
+        <div class="debug-item">
+            <span class="debug-label">Total Locataires:</span>
+            <span class="debug-value">${nbTotalLocataires}</span>
+        </div>
+        <div class="debug-item">
+            <span class="debug-label">Nombre de Paiements:</span>
+            <span class="debug-value">${nbPaiements}</span>
         </div>
         <div class="debug-item">
             <span class="debug-label">Request URI:</span>

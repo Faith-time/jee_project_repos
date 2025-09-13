@@ -270,6 +270,7 @@ public class AuthServlet extends HttpServlet {
         Utilisateur utilisateur = new Utilisateur(
                 donnees.nom.trim(),
                 donnees.prenom.trim(),
+                donnees.telephone.trim(),
                 donnees.email.trim().toLowerCase(),
                 donnees.motDePasse,
                 Role.VISITEUR // Rôle forcé à VISITEUR
@@ -404,6 +405,7 @@ public class AuthServlet extends HttpServlet {
     private static class DonneesInscription {
         String nom;
         String prenom;
+        String telephone;
         String email;
         String motDePasse;
         String confirmMotDePasse;

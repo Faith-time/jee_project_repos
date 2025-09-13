@@ -15,11 +15,36 @@ public class ContratDAOImpl extends GenericDAOImpl<Contrat> implements ContratDA
     @Override
     public List<Contrat> findByLocataire(Long locataireId) {
         EntityManager em = getEntityManager();
+        try {
+            TypedQuery<Contrat> query = em.createQuery(
+                    "SELECT DISTINCT c FROM Contrat c " +
+                            "JOIN FETCH c.locataire " +
+                            "JOIN FETCH c.unite u " +
+                            "JOIN FETCH u.immeuble " +
+                            "WHERE c.locataire.id = :lid " +
+                            "ORDER BY c.dateDebut DESC",
+                    Contrat.class
+            );
+            query.setParameter("lid", locataireId);
 
-        TypedQuery<Contrat> query = em.createQuery(
-                "SELECT c FROM Contrat c WHERE c.locataire.id = :lid", Contrat.class);
-        query.setParameter("lid", locataireId);
-        return query.getResultList();
+            List<Contrat> contrats = query.getResultList();
+
+            // Debug détaillé
+            System.out.println("=== DEBUG ContratDAO ===");
+            System.out.println("Locataire ID recherché: " + locataireId);
+            System.out.println("Nombre de contrats trouvés: " + contrats.size());
+
+            for (Contrat c : contrats) {
+                System.out.println("Contrat #" + c.getId() +
+                        " - Locataire: " + c.getLocataire().getId() +
+                        " - Unité: " + c.getUnite().getNumero() +
+                        " - Immeuble: " + c.getUnite().getImmeuble().getNom());
+            }
+
+            return contrats;
+        } finally {
+            em.close();
+        }
     }
 
     @Override

@@ -31,6 +31,20 @@ public class Paiement {
     @JoinColumn(name = "contrat_id", nullable = false)
     private Contrat contrat;
 
+    @Column(unique = true, length = 100)
+    private String transactionId;   // transaction_id envoyé à CinetPay (ex: "PAI-123-1623")
+
+    @Column(length = 500)
+    private String paymentToken;    // payment_token retourné par CinetPay (optionnel)
+
+    @Column(length = 1000)
+    private String paymentUrl;      // payment_url retourné par CinetPay (optionnel)
+
+    @Column(length = 100)
+    private String operatorId;      // id de l'opérateur retourné après paiement
+
+    @Column(columnDefinition = "TEXT")  // Utilise TEXT au lieu de VARCHAR(255)
+    private String rawResponse;
 
     public enum StatutPaiement {
         EN_ATTENTE,   // le paiement est attendu mais pas encore effectué

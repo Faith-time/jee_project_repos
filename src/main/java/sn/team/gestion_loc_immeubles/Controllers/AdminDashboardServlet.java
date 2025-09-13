@@ -75,7 +75,6 @@ public class AdminDashboardServlet extends HttpServlet {
             long nbContrats = contratService.compterTousContrats();
 
             // Statistiques des paiements
-            long nbPaiements = paiementService.compterTousPaiements();
 
             // Ajouter aux attributs de la requête
             req.setAttribute("nbUtilisateurs", nbUtilisateurs);
@@ -84,7 +83,6 @@ public class AdminDashboardServlet extends HttpServlet {
             req.setAttribute("nbAdmins", nbAdmins);
             req.setAttribute("nbImmeubles", nbImmeubles);
             req.setAttribute("nbContrats", nbContrats);
-            req.setAttribute("nbPaiements", nbPaiements);
 
             // Log pour debugging
             System.out.println("=== Statistiques Dashboard Admin ===");
@@ -94,7 +92,6 @@ public class AdminDashboardServlet extends HttpServlet {
             System.out.println("Admins: " + nbAdmins);
             System.out.println("Immeubles: " + nbImmeubles);
             System.out.println("Contrats: " + nbContrats);
-            System.out.println("Paiements: " + nbPaiements);
 
         } catch (Exception e) {
             System.err.println("Erreur lors du chargement des statistiques: " + e.getMessage());

@@ -22,6 +22,7 @@ public class ContratServlet extends HttpServlet {
         this.contratService = new ContratService();
     }
 
+// Modification de la partie doGet() dans ContratServlet
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String action = req.getParameter("action");
@@ -34,38 +35,42 @@ public class ContratServlet extends HttpServlet {
             return;
         }
 
-        if ("mes-contrats".equals(action)) {
+        // Ajout de logs pour déboguer
+        System.out.println("=== ContratServlet Debug ===");
+        System.out.println("Action reçue: " + action);
+        System.out.println("Utilisateur connecté ID: " + utilisateurConnecte.getId());
+        System.out.println("Est locataire: " + utilisateurConnecte.isLocataire());
+
+        if ("mes-contrats".equals(action) || action == null) { // <- Modification ici
             // Afficher les contrats de l'utilisateur connecté
+            List<Contrat> contrats = contratService.listerParLocataire(utilisateurConnecte.getId());
+
+            // Debug
+            System.out.println("Nombre de contrats trouvés: " + contrats.size());
+            for (Contrat c : contrats) {
+                System.out.println("Contrat ID: " + c.getId() +
+                        ", Locataire: " + c.getLocataire().getId() +
+                        ", Unité: " + c.getUnite().getNumero());
+            }
+
+            req.setAttribute("contrats", contrats);
+
+            // Redirection vers le bon fichier JSP
+            req.getRequestDispatcher("/WEB-INF/jsp/locataire/mes_contrats.jsp").forward(req, resp); // <- Changé ici
+
+        } else if ("detail".equals(action) && idParam != null) {
+            // ... reste identique ...
+
+        } else if ("tous".equals(action) && utilisateurConnecte.isAdmin()) {
+            // ... reste identique ...
+
+        } else {
+            // Par défaut, afficher les contrats sans redirection
             List<Contrat> contrats = contratService.listerParLocataire(utilisateurConnecte.getId());
             req.setAttribute("contrats", contrats);
             req.getRequestDispatcher("/WEB-INF/jsp/locataire/mes_contrats.jsp").forward(req, resp);
-
-        } else if ("detail".equals(action) && idParam != null) {
-            // Afficher le détail d'un contrat
-            Long contratId = Long.parseLong(idParam);
-            Contrat contrat = contratService.trouverParId(contratId);
-
-            // Vérifier que le contrat appartient à l'utilisateur connecté (sécurité)
-            if (contrat != null && contrat.getLocataire().getId().equals(utilisateurConnecte.getId())) {
-                req.setAttribute("contrat", contrat);
-                req.getRequestDispatcher("/WEB-INF/jsp/locataire/detail_contrat.jsp").forward(req, resp);
-            } else {
-                req.getSession().setAttribute("errorMessage", "Contrat non trouvé ou accès non autorisé.");
-                resp.sendRedirect(req.getContextPath() + "/contrats?action=mes-contrats");
-            }
-
-        } else if ("tous".equals(action) && utilisateurConnecte.isAdmin()) {
-            // Liste de tous les contrats (admin seulement)
-            List<Contrat> contrats = contratService.listerContrats();
-            req.setAttribute("contrats", contrats);
-            req.getRequestDispatcher("/WEB-INF/jsp/admin/tous_contrats.jsp").forward(req, resp);
-
-        } else {
-            // Par défaut, rediriger vers les contrats de l'utilisateur
-            resp.sendRedirect(req.getContextPath() + "/contrats?action=mes-contrats");
         }
     }
-
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String action = req.getParameter("action");

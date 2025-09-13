@@ -27,6 +27,9 @@ public class Utilisateur {
     @Size(min = 2, max = 50)
     private String prenom;
 
+    @Column(length = 20)
+    private String telephone;
+
     @Email
     @NotBlank
     @Column(unique = true, nullable = false)
@@ -51,17 +54,18 @@ public class Utilisateur {
     public Utilisateur() {}
 
     // Constructeur pratique
-    public Utilisateur(String nom, String prenom, String email, String motDePasse, Role role) {
+    public Utilisateur(String nom, String prenom,String telephone, String email, String motDePasse, Role role) {
         this.nom = nom;
         this.prenom = prenom;
+        this.telephone = telephone;
         this.email = email;
         this.motDePasse = motDePasse;
         this.role = role != null ? role : Role.VISITEUR;
     }
 
     // Constructeur sans rôle (par défaut VISITEUR)
-    public Utilisateur(String nom, String prenom, String email, String motDePasse) {
-        this(nom, prenom, email, motDePasse, Role.VISITEUR);
+    public Utilisateur(String nom, String prenom,String telephone, String email, String motDePasse) {
+        this(nom, prenom,telephone, email, motDePasse, Role.VISITEUR);
     }
 
     /**
